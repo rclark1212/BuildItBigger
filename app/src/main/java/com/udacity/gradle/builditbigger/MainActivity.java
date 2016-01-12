@@ -2,6 +2,8 @@ package com.udacity.gradle.builditbigger;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Pair;
@@ -43,19 +45,37 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void tellJoke(View view){
-
-        //TODO - check for internet...
+    public void tellJoke(View view) {
 
         //Toast.makeText(this, myJoker.getJoke(), Toast.LENGTH_SHORT).show();
-        new EndpointsAsyncTask().execute(new Pair<Context, String>(this, ""));
-        //launchShowJokeLib(myJoker.getJoke());
+
+        //check for internet...
+        if (!isOnline()) {
+            Toast.makeText(this, getString(R.string.no_inet), Toast.LENGTH_SHORT).show();
+        } else {
+            new EndpointsAsyncTask().execute(new Pair<Context, String>(this, "(promise)"));
+        }
     }
 
+    //used to launch the show joke page - now done in asynctask completion
     public void launchShowJokeLib(String joke) {
         Intent myIntent = new Intent(this, ShowJoke.class);
         myIntent.putExtra(ShowJoke.JOKE_ARG, joke);
         startActivity(myIntent);
+    }
+
+    //
+    //  Utility routine to check if we have internet connection. Check on start
+    //
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+
+        if (netInfo == null)
+            return false;
+
+        return netInfo.isConnected();
     }
 
 }

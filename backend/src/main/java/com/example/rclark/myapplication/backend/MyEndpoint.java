@@ -44,4 +44,15 @@ public class MyEndpoint {
 
         return response;
     }
+
+    @ApiMethod(name = "getJokes")
+    public MyBean getJokes(@Named("jokeid") String jokeid) {
+        Joker myJoker = new Joker();
+
+        MyBean response = new MyBean();
+        response.setData(myJoker.getJokes(jokeid));
+
+        return response;
+    }
+
 }
