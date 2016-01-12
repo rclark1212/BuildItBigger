@@ -3,6 +3,8 @@ package app.com.example.android.myshowjokelib;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -20,8 +22,13 @@ public class ShowJoke extends ActionBarActivity {
 
         Intent intent = getIntent();
         if (intent != null) {
+            //get the joke from the intent
             String joke = intent.getStringExtra(JOKE_ARG);
-            Toast.makeText(this, joke, Toast.LENGTH_SHORT).show();
+            TextView text = (TextView) findViewById(R.id.joke_text);
+            if (text != null) {
+                text.setText(joke.toCharArray(), 0, joke.length());
+            }
+            //Toast.makeText(this, joke, Toast.LENGTH_SHORT).show();
         }
     }
 }
