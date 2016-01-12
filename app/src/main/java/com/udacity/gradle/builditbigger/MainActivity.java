@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-import com.udacity.gradle.jokes.Joker;
 import app.com.example.android.myshowjokelib.ShowJoke;
 
 
@@ -46,11 +45,11 @@ public class MainActivity extends ActionBarActivity {
 
     public void tellJoke(View view){
 
-        Joker myJoker = new Joker();
+        //TODO - check for internet...
 
         //Toast.makeText(this, myJoker.getJoke(), Toast.LENGTH_SHORT).show();
-        new EndpointsAsyncTask().execute(new Pair<Context, String>(this, "Manfred"));
-        launchShowJokeLib(myJoker.getJoke());
+        new EndpointsAsyncTask().execute(new Pair<Context, String>(this, ""));
+        //launchShowJokeLib(myJoker.getJoke());
     }
 
     public void launchShowJokeLib(String joke) {

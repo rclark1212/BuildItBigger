@@ -1,6 +1,7 @@
 package com.udacity.gradle.builditbigger;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Pair;
 import android.widget.Toast;
@@ -10,6 +11,7 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import app.com.example.android.myshowjokelib.ShowJoke;
 
 import java.io.IOException;
 
@@ -24,6 +26,7 @@ class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> 
     @Override
     protected String doInBackground(Pair<Context, String>... params) {
         if(myApiService == null) {  // Only do this once
+            //Set this to real provider in cloud
             MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
                     .setRootUrl("https://udacitybuilditbiggerbackend.appspot.com/_ah/api/");
 /*
@@ -47,7 +50,9 @@ class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> 
         String name = params[0].second;
 
         try {
-            return myApiService.sayHi(name).execute().getData();
+            //return myApiService.sayHi(name).execute().getData();
+            //get the joke from the endpoint (new api call)
+            return myApiService.getJoke().execute().getData();
         } catch (IOException e) {
             return e.getMessage();
         }
@@ -55,6 +60,11 @@ class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> 
 
     @Override
     protected void onPostExecute(String result) {
-        Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+        //call joke display directly on postexecute
+        Intent myIntent = new Intent(context, ShowJoke.class);
+        myIntent.putExtra(ShowJoke.JOKE_ARG, result);
+        context.startActivity(myIntent);
+
+        //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
     }
 }
