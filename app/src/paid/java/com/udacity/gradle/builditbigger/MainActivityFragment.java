@@ -32,4 +32,6 @@ public class MainActivityFragment extends Fragment {
         mAdView.loadAd(adRequest); */
         return root;
     }
+
+
 }

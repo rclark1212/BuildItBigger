@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Pair;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.rclark.myapplication.backend.myApi.MyApi;
@@ -21,8 +23,24 @@ import java.io.IOException;
 
 class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> {
     private static MyApi myApiService = null;
-    private Context context;
+    private Context context = null;
+    private View mView = null;
     private TaskListener mListener = null;      //listener for testing asynctask
+
+    public EndpointsAsyncTask(View view) {
+        //save off a copy of the view
+        mView = view;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        //either put up an interstitial ad or a loading indicator
+        //for paid, loading indicator. for free, you get an ad...
+        if (mView != null) {
+            ProgressBar progress = (ProgressBar) mView.findViewById(R.id.progress_bar);
+            if (progress != null) progress.setVisibility(View.VISIBLE);
+        }
+    }
 
     @Override
     protected String doInBackground(Pair<Context, String>... params) {
@@ -63,6 +81,13 @@ class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> 
 
     @Override
     protected void onPostExecute(String result) {
+
+        //okay, hide the spinner if it exists...
+        //hide the progress bar
+        if (mView != null) {
+            ProgressBar progress = (ProgressBar) mView.findViewById(R.id.progress_bar);
+            if (progress != null) progress.setVisibility(View.GONE);
+        }
 
         //first check if we are testing...
         if (mListener != null) {

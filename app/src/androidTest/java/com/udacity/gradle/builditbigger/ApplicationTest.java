@@ -38,7 +38,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     //the actual test itself
     public void testEndpoint() throws InterruptedException {
         //create the task
-        EndpointsAsyncTask task = new EndpointsAsyncTask();
+        EndpointsAsyncTask task = new EndpointsAsyncTask(null);
 
         //set the listener and execute the task
         task.setListener(new EndpointsAsyncTask.TaskListener() {

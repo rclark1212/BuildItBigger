@@ -49,11 +49,13 @@ public class MainActivity extends ActionBarActivity {
 
         //Toast.makeText(this, myJoker.getJoke(), Toast.LENGTH_SHORT).show();
 
+        View parentview = view.getRootView();
+
         //check for internet...
         if (!isOnline()) {
             Toast.makeText(this, getString(R.string.no_inet), Toast.LENGTH_SHORT).show();
         } else {
-            new EndpointsAsyncTask().execute(new Pair<Context, String>(this, "(promise)"));
+            new EndpointsAsyncTask(parentview).execute(new Pair<Context, String>(this, "(promise)"));
         }
     }
 
