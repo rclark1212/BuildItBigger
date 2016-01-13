@@ -22,9 +22,15 @@ import java.io.IOException;
 class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> {
     private static MyApi myApiService = null;
     private Context context;
+    private TaskListener mListener = null;      //listener for testing asynctask
 
     @Override
     protected String doInBackground(Pair<Context, String>... params) {
+
+        //grab params first
+        context = params[0].first;
+        String name = params[0].second;
+
         if(myApiService == null) {  // Only do this once
             //Set this to real provider in cloud
             MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
@@ -46,9 +52,6 @@ class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> 
             myApiService = builder.build();
         }
 
-        context = params[0].first;
-        String name = params[0].second;
-
         try {
             //return myApiService.sayHi(name).execute().getData();
             //get the joke from the endpoint (new api call)
@@ -60,11 +63,30 @@ class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> 
 
     @Override
     protected void onPostExecute(String result) {
-        //call joke display directly on postexecute
-        Intent myIntent = new Intent(context, ShowJoke.class);
-        myIntent.putExtra(ShowJoke.JOKE_ARG, result);
-        context.startActivity(myIntent);
 
+        //first check if we are testing...
+        if (mListener != null) {
+            //test!
+            mListener.onComplete(result);
+            //mListener.onComplete("");       //test the tests
+        } else {
+            //call joke display directly on postexecute
+            Intent myIntent = new Intent(context, ShowJoke.class);
+            myIntent.putExtra(ShowJoke.JOKE_ARG, result);
+            context.startActivity(myIntent);
+        }
         //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+    }
+
+    //Listener code for testing async task
+    //define interface
+    public static interface TaskListener {
+        public void onComplete(String result);
+    }
+
+    //set listener
+    public EndpointsAsyncTask setListener(TaskListener listener) {
+        mListener = listener;
+        return this;
     }
 }
