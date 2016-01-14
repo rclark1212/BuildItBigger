@@ -34,8 +34,7 @@ class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> 
 
     @Override
     protected void onPreExecute() {
-        //either put up an interstitial ad or a loading indicator
-        //for paid, loading indicator. for free, you get an ad...
+        //put up a loading indicator
         if (mView != null) {
             ProgressBar progress = (ProgressBar) mView.findViewById(R.id.progress_bar);
             if (progress != null) progress.setVisibility(View.VISIBLE);
@@ -82,8 +81,7 @@ class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> 
     @Override
     protected void onPostExecute(String result) {
 
-        //okay, hide the spinner if it exists...
-        //hide the progress bar
+        //hide the loading indicator
         if (mView != null) {
             ProgressBar progress = (ProgressBar) mView.findViewById(R.id.progress_bar);
             if (progress != null) progress.setVisibility(View.GONE);
