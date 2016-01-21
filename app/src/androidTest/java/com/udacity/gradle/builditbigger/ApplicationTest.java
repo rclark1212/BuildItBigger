@@ -41,6 +41,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         EndpointsAsyncTask task = new EndpointsAsyncTask(null);
 
         //set the listener and execute the task
+        //note specifically that we are calling w/a null context on the test
         task.setListener(new EndpointsAsyncTask.TaskListener() {
                 @Override
                 public void onComplete(String result) {

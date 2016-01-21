@@ -49,24 +49,37 @@ class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> 
         String name = params[0].second;
 
         if(myApiService == null) {  // Only do this once
-            //Set this to real provider in cloud
-            MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
-                    .setRootUrl("https://udacitybuilditbiggerbackend.appspot.com/_ah/api/");
-/*
-            MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
-                    new AndroidJsonFactory(), null)
-                    // options for running against local devappserver
-                    // - 10.0.2.2 is localhost's IP address in Android emulator
-                    // - turn off compression when running against local devappserver
-                    .setRootUrl("http://10.0.2.2:8080/_ah/api/")
-                    .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-                        @Override
-                        public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
-                            abstractGoogleClientRequest.setDisableGZipContent(true);
-                        }
-                    }); */
-            // end options for devappserver
-            myApiService = builder.build();
+
+            //Okay - we can either go to the cloud to get joke data *or*
+            //use the local dev server. For testing, lets only go to the local
+            //server (see udacityTest task done for extra credit). Note that I am
+            // assuming that udacity wants connectedTest running against local
+            // GCE server since instructions are to start/stop it for test. How do we
+            //distinguish a real operating request from a test harness request?
+            //Look at the context. If null, assume we are using test harness
+
+            if (context != null) {
+                //Set this to real provider in cloud
+                MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                        .setRootUrl("https://udacitybuilditbiggerbackend.appspot.com/_ah/api/");
+                myApiService = builder.build();
+            } else {
+                //We are running the test harness - go local for gce server
+                MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
+                        new AndroidJsonFactory(), null)
+                        // options for running against local devappserver
+                        // - 10.0.2.2 is localhost's IP address in Android emulator
+                        // - turn off compression when running against local devappserver
+                        .setRootUrl("http://10.0.2.2:8080/_ah/api/")
+                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+                            @Override
+                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
+                                abstractGoogleClientRequest.setDisableGZipContent(true);
+                            }
+                        });
+                // end options for devappserver
+                myApiService = builder.build();
+            }
         }
 
         try {
@@ -91,7 +104,7 @@ class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> 
         if (mListener != null) {
             //test!
             mListener.onComplete(result);
-            //mListener.onComplete("");       //test the tests
+            //mListener.onComplete("");       //test the tests (uncomment to test the tests)
         } else {
             //call joke display directly on postexecute
             Intent myIntent = new Intent(context, ShowJoke.class);

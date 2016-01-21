@@ -17,3 +17,57 @@ allprojects {
         jcenter()
     }
 }
+
+/* Udacity task to load backend server, run tests and then stop server below
+*
+*   The most difficult part of the assignment. No issue on launching start,
+*   stop or the tests. Huge issue on getting the tasks to run in a synchronous
+*   manner. Secret hint (which I got from class discussion) is to run as a daemon.
+*   Also make several subroutines to invoke each action in order to control
+*   execution order (not appropriate + don't know how to set a mustRunAfter prop
+*   to an external gradle module task - simply embedd the actions in local tasks
+*   and control execution order locally).
+*   Note that the emulator needs to be running for this test to run.
+*
+*   RUN udacityTest task to start GCE engine, run tests and then stop engine.
+* */
+
+task udacity_gcestart(dependsOn: ":backend:appengineRun") {
+    evaluationDependsOn ":backend"
+
+    project(":backend") {
+        appengine {
+            daemon true
+        }
+    }
+    doLast {
+        println "*** Started GCE engine!"
+    }
+}
+
+task udacity_runtests(dependsOn: ":app:connectedAndroidTest") {
+    doLast {
+        println "*** Testing!"
+    }
+}
+
+task udacity_gcestop(dependsOn: ":backend:appengineStop") {
+    evaluationDependsOn ":backend"
+
+    project(":backend") {
+        appengine {
+            daemon true
+        }
+    }
+    doLast {
+        println "*** Stopped GCE engine!"
+    }
+}
+
+udacity_gcestop.mustRunAfter udacity_runtests
+udacity_runtests.mustRunAfter udacity_gcestart
+
+task udacityTest(dependsOn: [udacity_gcestart, udacity_runtests, udacity_gcestop]) << {
+    println "*** Finished udacity tests!"
+}
+
