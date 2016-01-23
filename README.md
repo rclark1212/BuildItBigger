@@ -135,3 +135,13 @@ To receive "exceeds specifications", your app must fully implement all of the fo
 * The free app variant displays interstitial ads between the main activity and the joke-displaying activity.
 * The app displays a loading indicator while the joke is being fetched from the server.
 * The root build.gradle file contains a task that will start up the GCE development server, run all Android tests, then shutdown the development server.
+
+### This implementation
+
+Implemented all steps including exceeds expectation steps.
+Verified against rubric.
+
+Three notes:
+1) Run the udacityTest task for the automated testing which loads GCE dev server, runs tests, shuts down server again.
+2) Note that the connectedTest is set up to only test against the local GCE server rather than the real GCE. See comment in EndpointsAsyncTask to change.
+3) And note that an emulator device must be loaded and running for udacityTest task to properly run

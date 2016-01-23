@@ -36,14 +36,8 @@ dependencies {
     compile project(':myshowjokelib')
     compile 'com.android.support:appcompat-v7:23.1.1'
     // Added for AdMob
-    // Note that we could change our approach here and mark this as freeCompile (don't compile gms).
-    // However interstitial ad support would require re-arch of the app a bit to move
-    // the activity which shows the add to a flavor version. If not constrained by
-    // udacity guidelines, I would show the add in the showjoke module (and by extension
-    // would fetch the joke in that module - but per instructions I need
-    // to call that module with the joke already fetched). Other option is to move
-    // MainActivity to flavor directories but this loses all code leverage - yuck.
-    // So build in gms to both paid and free versions for now.
-    compile 'com.google.android.gms:play-services:8.4.0'
+    // Only compile in ad library for free version. Note that we moved all interstitial ad routines
+    // to a flavorutil lib that differs between free and paid.
+    freeCompile 'com.google.android.gms:play-services:8.4.0'
     compile project(path: ':backend', configuration: 'android-endpoints')
 }

@@ -6,49 +6,30 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 import app.com.example.android.myshowjokelib.ShowJoke;
-import com.google.android.gms.ads.*;
 
 public class MainActivity extends ActionBarActivity {
-
-    public InterstitialAd mInterstitialAd = null;
-    private View mParentView = null;                //save off parent view
-    private Context mContext = null;                //save off context
+    public static View mParentView = null;          //save off parent view for progress show/hide
+    private FlavorUtil mFlavorUtil = null;          //instance of our flavor lib (handles interstitial ads)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //save off context
-        mContext = this;
+        //save off flavor lib instance
+        mFlavorUtil = new FlavorUtil(this);
 
-        //load up the ad on create
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdClosed() {
-                //and when add is closed, preload the next one...
-                FlavorUtil.requestNewInterstitial(mInterstitialAd);
-                //and launch joke task
-                new EndpointsAsyncTask(mParentView).execute(new Pair<Context, String>(mContext, "(promise)"));
-                //Note that you could optimize for free version here by loading joke
-                //in background while interstitial was showing. Best way to do that though
-                //is to either move the ad to the showjoke module or use a semiphore
-                //and take the showjoke intent out of the postProcess task routine.
-            }
-        });
+        //set up the interstitial ad listener...
+        mFlavorUtil.setUpListener();
 
         //load the first interstitial
-        FlavorUtil.requestNewInterstitial(mInterstitialAd);
+        mFlavorUtil.requestNewInterstitial();
     }
 
 
@@ -87,10 +68,9 @@ public class MainActivity extends ActionBarActivity {
         if (!isOnline()) {
             Toast.makeText(this, getString(R.string.no_inet), Toast.LENGTH_SHORT).show();
         } else {
-            if (mInterstitialAd.isLoaded()) {
-                mInterstitialAd.show();
-            } else {
-                //launch joke task
+            //check if interstitial is loaded and show that if true (and launch joke on close)
+            if (!mFlavorUtil.showInterstitialifLoaded()) {
+                //or if not loaded, directly launch interstitial
                 new EndpointsAsyncTask(mParentView).execute(new Pair<Context, String>(this, "(promise)"));
             }
         }
@@ -98,7 +78,7 @@ public class MainActivity extends ActionBarActivity {
 
 
     //
-    //used to launch the show joke page - now done in asynctask completion
+    //used to launch the show joke page - now done in asynctask completion. Not used but keep for testing.
     //
     public void launchShowJokeLib(String joke) {
         Intent myIntent = new Intent(this, ShowJoke.class);

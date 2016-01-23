@@ -58,6 +58,8 @@ class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> 
             //distinguish a real operating request from a test harness request?
             //Look at the context. If null, assume we are using test harness
 
+            //if you want to force androidTest to use real GCE, either pass in a non-null context from
+            //the test or else change the if statement below to always evaluate as true.
             if (context != null) {
                 //Set this to real provider in cloud
                 MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
@@ -104,7 +106,7 @@ class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> 
         if (mListener != null) {
             //test!
             mListener.onComplete(result);
-            //mListener.onComplete("");       //test the tests (uncomment to test the tests)
+            //mListener.onComplete("");       //test the tests (uncomment to force fail the tests)
         } else {
             //call joke display directly on postexecute
             Intent myIntent = new Intent(context, ShowJoke.class);
